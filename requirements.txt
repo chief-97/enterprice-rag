@@ -1,0 +1,13 @@
+langchain
+langchain-google-genai
+langchain-chroma
+chromadb
+pypdf
+python-dotenv
+langchain
+langchain-groq
+langchain-nvidia-ai-endpoints
+langchain-chroma
+chromadb
+pypdf
+python-dotenv

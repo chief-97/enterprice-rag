@@ -1,0 +1,24 @@
+# Environment variables (API keys - NEVER commit this)
+.env
+
+# Virtual environment
+venv/
+env/
+
+# Vector database (regenerated from ingest.py)
+chroma_db/
+db/
+DB/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
