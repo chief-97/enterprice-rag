@@ -30,7 +30,7 @@ print(f"total chunks : {len(chunks)}")
 
 
 embeddings = NVIDIAEmbeddings(
-    model = "nvidia/nv-embedqa-e5-v5",
+    model = "nvidia/nemotron-3-embed-1b",
     api_key= os.getenv("NVIDIA_API_KEY")
 )
 
