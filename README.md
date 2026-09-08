@@ -1,89 +1,140 @@
-# Simple RAG Chatbot
+# Enterprise RAG Pipeline
 
-A basic Retrieval-Augmented Generation (RAG) chatbot that answers questions based on the content of a PDF document. Built as a learning project to understand how RAG pipelines work end-to-end.
+A production-grade Retrieval-Augmented Generation (RAG) system that ingests multiple document formats (PDF, CSV, PPTX) and web URLs, then answers questions with context-aware, source-grounded responses using a hybrid retrieval pipeline.
 
-## How it works
+🔗 **Live Demo:** _[add your Streamlit Cloud link here after deployment]_
 
-1. **Ingestion** (`ingest.py`) — loads a PDF, splits it into chunks, generates embeddings, and stores them in a local vector database (Chroma).
-2. **Retrieval + Chat** (`app.py`) — loads the existing vector database, retrieves the most relevant chunks for a user's question, and passes them to an LLM to generate a grounded answer.
+---
 
-```
-PDF → Load → Split into chunks → Embed → Store in Chroma DB
-                                                  ↓
-User Question → Retriever (top-k similar chunks) → Prompt (context + question) → LLM → Answer
-```
+## ✨ Features
 
-## Tech Stack
+- 📄 Multi-format document ingestion — PDF, CSV, PPT/PPTX, and web URLs
+- 🔍 Hybrid retrieval — combines dense vector search with BM25 keyword search via `EnsembleRetriever` for more accurate results
+- ☁️ Cloud-native vector storage — powered by Qdrant Cloud (no local DB dependency)
+- ⚡ Fast LLM inference via Groq
+- 💬 Persistent chat history and session-based state management
+- 🖥️ Clean, interactive Streamlit UI with real-time ingestion progress
+- 🔐 Secure secrets management via environment variables
 
-- **Framework:** [LangChain](https://www.langchain.com/)
-- **LLM:** Groq (`llama-3.1-8b-instant`)
-- **Embeddings:** NVIDIA NIM (`nvidia/nv-embedqa-e5-v5`)
-- **Vector Store:** Chroma (local, persisted on disk)
-- **PDF Loading:** PyPDFLoader
+---
 
-## Project Structure
+## 🛠️ Tech Stack
 
-```
-simple_rag/
-│
-├── app.py              # Loads vector DB, runs retrieval + chat loop
-├── ingest.py            # One-time script: PDF -> chunks -> embeddings -> chroma_db/
-├── requirements.txt
-├── .env.example          # Template for required API keys
-│
-├── data/
-│   └── your_file.pdf      # Source document
-│
-└── chroma_db/               # Vector database (auto-generated, gitignored)
-```
+| Component        | Technology                              |
+|-------------------|------------------------------------------|
+| Framework         | LangChain                                |
+| Vector Store      | Qdrant Cloud                             |
+| Embeddings        | NVIDIA NIM — `nvidia/nv-embedqa-e5-v5`   |
+| LLM               | Groq — `openai/gpt-oss-120b`             |
+| Retrieval         | Hybrid (Dense + BM25 via EnsembleRetriever) |
+| Frontend          | Streamlit                                |
+| Language          | Python                                   |
 
-## Setup
+---
 
-1. Clone the repo and create a virtual environment:
-   ```
-   python -m venv venv
-   venv\Scripts\activate      # Windows
-   source venv/bin/activate   # Mac/Linux
-   ```
-
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. Copy `.env.example` to `.env` and add your API keys:
-   ```
-   GROQ_API_KEY=your_key_here
-   NVIDIA_API_KEY=your_key_here
-   ```
-   - Get a Groq key from [console.groq.com](https://console.groq.com)
-   - Get an NVIDIA key from [build.nvidia.com](https://build.nvidia.com)
-
-4. Add your PDF to the `data/` folder.
-
-5. Build the vector database (run once, or whenever the source PDF changes):
-   ```
-   python ingest.py
-   ```
-
-6. Start the chatbot:
-   ```
-   python app.py
-   ```
-
-## Example
+## 🏗️ Architecture
 
 ```
-You: what is this document about?
-Bot: [answer generated from the PDF content]
-
-You: what is the capital of France?
-Bot: Mujhe iska jawab document me nahi mila.
+Document Upload / URL Input
+        │
+        ▼
+  Format-specific Loader (PDF / CSV / PPTX / HTML)
+        │
+        ▼
+   Chunking & Preprocessing
+        │
+        ▼
+   NVIDIA Embeddings (nv-embedqa-e5-v5)
+        │
+        ▼
+   Qdrant Cloud Vector Store
+        │
+        ▼
+  Hybrid Retriever (Dense + BM25)
+        │
+        ▼
+   Groq LLM (openai/gpt-oss-120b)
+        │
+        ▼
+   Answer + Source Citations → Streamlit UI
 ```
 
-The bot only answers from the provided document — it won't hallucinate answers outside the given context.
+---
 
-## Notes
+## 📸 Screenshots
 
-- This project uses `langchain_classic` for chain construction (`create_retrieval_chain`, `create_stuff_documents_chain`), since these were moved out of the core `langchain` package in LangChain v1.0.
-- The vector database (`chroma_db/`) is not committed to git — run `ingest.py` locally to regenerate it.
+_[Add 1-2 screenshots of the chat interface here]_
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- A Qdrant Cloud account and API key
+- A Groq API key
+- An NVIDIA NIM API key
+
+### Installation
+
+```bash
+git clone https://github.com/chief-97/enterprice-rag.git
+cd enterprice-rag
+python -m venv venv
+venv\Scripts\activate      # Windows
+# source venv/bin/activate  # macOS/Linux
+pip install -r requirements.txt
+```
+
+### Environment Variables
+
+Copy `env.example` to `.env` and fill in your keys:
+
+```
+QDRANT_URL=your_qdrant_cloud_url
+QDRANT_API_KEY=your_qdrant_api_key
+GROQ_API_KEY=your_groq_api_key
+NVIDIA_API_KEY=your_nvidia_nim_api_key
+```
+
+### Run the app
+
+```bash
+streamlit run main.py
+```
+
+---
+
+## 📁 Project Structure
+
+```
+enterprice-rag/
+├── main.py           # Streamlit app entry point & UI
+├── app.py            # Application logic
+├── ingest.py         # Document ingestion & processing pipeline
+├── requirements.txt  # Python dependencies
+├── env.example        # Example environment variables
+└── README.md
+```
+
+---
+
+## 📌 Roadmap / Future Improvements
+
+- [ ] Add support for more document formats (DOCX, XLSX)
+- [ ] Add re-ranking for improved retrieval accuracy
+- [ ] Add authentication for multi-user support
+- [ ] Add evaluation metrics (RAGAS) for answer quality
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 🙋 Author
+
+**Shivam Vivekanand Upadhyay**
+[GitHub](https://github.com/chief-97)
